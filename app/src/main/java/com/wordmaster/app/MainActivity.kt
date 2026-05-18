@@ -202,7 +202,8 @@ fun WordMasterNavigation(
                 learnedWords = learnedCount,
                 totalCorrect = totalCorrect,
                 totalWrong = totalWrong,
-                onBack = { currentScreen = Screen.Main }
+                onBack = { currentScreen = Screen.Main },
+                onResetStats = { quizViewModel.resetAllStats() }
             )
 
             Screen.Review -> ReviewScreen(

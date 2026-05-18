@@ -54,6 +54,9 @@ interface SentenceDao {
     @Query("UPDATE sentences SET isLearned = 0, correctCount = 0, wrongCount = 0, streak = 0 WHERE isLearned = 1")
     suspend fun resetAllLearned()
 
+    @Query("UPDATE sentences SET correctCount = 0, wrongCount = 0, streak = 0, lastAnsweredAt = 0")
+    suspend fun resetAllStats()
+
     @Query(
         """
         SELECT * FROM sentences WHERE isLearned = 0

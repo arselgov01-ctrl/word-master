@@ -138,4 +138,24 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
     fun skipWord() {
         loadNextWord()
     }
+
+    /**
+     * Wipes the per-word and per-sentence answer counters (correctCount,
+     * wrongCount, streak, lastAnsweredAt). Does NOT clear `isLearned` —
+     * that's reset from the LearnedWords / LearnedSentences screens.
+     */
+    fun resetAllStats() {
+        viewModelScope.launch {
+            repository.resetAllStats()
+            app.sentenceRepository.resetAllStats()
+            _state.update {
+                it.copy(
+                    sessionCorrect = 0,
+                    sessionWrong = 0,
+                    currentStreak = 0,
+                    bestStreak = 0
+                )
+            }
+        }
+    }
 }

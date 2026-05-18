@@ -66,6 +66,9 @@ interface WordDao {
     @Query("UPDATE words SET isLearned = 0, correctCount = 0, wrongCount = 0, streak = 0 WHERE isLearned = 1")
     suspend fun resetAllLearned()
 
+    @Query("UPDATE words SET correctCount = 0, wrongCount = 0, streak = 0, lastAnsweredAt = 0")
+    suspend fun resetAllStats()
+
     @Query(
         """
         SELECT * FROM words WHERE isLearned = 0 

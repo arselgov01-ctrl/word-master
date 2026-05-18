@@ -25,11 +25,13 @@ fun StatsScreen(
     learnedWords: Int,
     totalCorrect: Int,
     totalWrong: Int,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onResetStats: () -> Unit
 ) {
     val totalAnswers = totalCorrect + totalWrong
     val accuracy = if (totalAnswers > 0) (totalCorrect * 100.0 / totalAnswers) else 0.0
     val remaining = totalWords - learnedWords
+    var showResetDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -47,6 +49,15 @@ fun StatsScreen(
             navigationIcon = {
                 IconButton(onClick = onBack) {
                     Icon(Icons.Filled.ArrowBack, "Назад", tint = TextWhite)
+                }
+            },
+            actions = {
+                IconButton(onClick = { showResetDialog = true }) {
+                    Icon(
+                        Icons.Filled.Refresh,
+                        contentDescription = "Сбросить статистику",
+                        tint = TextWhite
+                    )
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = BackgroundDark)
@@ -175,6 +186,48 @@ fun StatsScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
         }
+    }
+
+    if (showResetDialog) {
+        AlertDialog(
+            onDismissRequest = { showResetDialog = false },
+            containerColor = BackgroundCard,
+            title = {
+                Text(
+                    "Сбросить статистику?",
+                    color = TextWhite,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    "Счётчики правильных и неправильных ответов, серии и точность " +
+                        "будут обнулены для всех слов и предложений. Список выученных " +
+                        "слов и предложений останется без изменений.",
+                    color = TextGray,
+                    fontSize = 14.sp
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showResetDialog = false
+                        onResetStats()
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = WrongRed)
+                ) {
+                    Text("Сбросить", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showResetDialog = false },
+                    colors = ButtonDefaults.textButtonColors(contentColor = TextGray)
+                ) {
+                    Text("Отмена")
+                }
+            }
+        )
     }
 }
 

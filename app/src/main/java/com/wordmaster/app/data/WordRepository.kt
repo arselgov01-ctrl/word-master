@@ -59,6 +59,10 @@ class WordRepository(private val wordDao: WordDao) {
         wordDao.resetAllLearned()
     }
 
+    suspend fun resetAllStats() {
+        wordDao.resetAllStats()
+    }
+
     // Для проверки выученных слов
     suspend fun getRandomLearnedWord(): WordEntity? {
         return wordDao.getRandomLearnedWord()

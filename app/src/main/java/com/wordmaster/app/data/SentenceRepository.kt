@@ -47,6 +47,8 @@ class SentenceRepository(private val sentenceDao: SentenceDao) {
     suspend fun markAsUnlearned(id: Int) = sentenceDao.markAsUnlearned(id)
     suspend fun resetAllLearned() = sentenceDao.resetAllLearned()
 
+    suspend fun resetAllStats() = sentenceDao.resetAllStats()
+
     // Для проверки выученных предложений
     suspend fun getRandomLearnedSentence(): SentenceEntity? = sentenceDao.getRandomLearnedSentence()
 
