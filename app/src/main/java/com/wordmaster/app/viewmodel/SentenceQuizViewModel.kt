@@ -6,10 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.wordmaster.app.WordMasterApp
 import com.wordmaster.app.data.SentenceEntity
 import com.wordmaster.app.data.SentenceRepository
+import com.wordmaster.app.settings.AppSettings
+import com.wordmaster.app.settings.SettingsManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -25,10 +28,16 @@ data class SentenceQuizState(
 )
 
 class SentenceQuizViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: SentenceRepository = (application as WordMasterApp).sentenceRepository
+    private val app = application as WordMasterApp
+    private val repository: SentenceRepository = app.sentenceRepository
+    private val settingsManager: SettingsManager = app.settingsManager
 
     private val _state = MutableStateFlow(SentenceQuizState())
     val state: StateFlow<SentenceQuizState> = _state.asStateFlow()
+
+    private val answerCountFlow: StateFlow<Int> = settingsManager.settings
+        .map { it.answerCount }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, AppSettings.DEFAULT_ANSWER_COUNT)
 
     val totalCount: StateFlow<Int> = repository.totalCount
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
@@ -48,7 +57,8 @@ class SentenceQuizViewModel(application: Application) : AndroidViewModel(applica
             _state.update { it.copy(isLoading = true, selectedAnswer = null, isCorrect = null) }
             val sentence = repository.getNextQuizSentence()
             if (sentence != null) {
-                val wrong = repository.getWrongAnswers(sentence, 3)
+                val wrongCount = (answerCountFlow.value - 1).coerceAtLeast(1)
+                val wrong = repository.getWrongAnswers(sentence, wrongCount)
                 val all = (wrong + sentence).shuffled()
                 _state.update {
                     it.copy(

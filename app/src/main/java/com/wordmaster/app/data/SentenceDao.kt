@@ -69,4 +69,10 @@ interface SentenceDao {
 
     @Query("SELECT * FROM sentences WHERE id != :excludeId ORDER BY RANDOM() LIMIT :count")
     suspend fun getRandomSentencesExcluding(excludeId: Int, count: Int): List<SentenceEntity>
+
+    @Query("SELECT * FROM sentences WHERE isLearned = 1 ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomLearnedSentence(): SentenceEntity?
+
+    @Query("SELECT * FROM sentences WHERE isLearned = 1 AND id != :excludeId ORDER BY RANDOM() LIMIT :count")
+    suspend fun getRandomLearnedSentencesExcluding(excludeId: Int, count: Int): List<SentenceEntity>
 }

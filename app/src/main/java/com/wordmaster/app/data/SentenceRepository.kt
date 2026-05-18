@@ -47,6 +47,18 @@ class SentenceRepository(private val sentenceDao: SentenceDao) {
     suspend fun markAsUnlearned(id: Int) = sentenceDao.markAsUnlearned(id)
     suspend fun resetAllLearned() = sentenceDao.resetAllLearned()
 
+    // Для проверки выученных предложений
+    suspend fun getRandomLearnedSentence(): SentenceEntity? = sentenceDao.getRandomLearnedSentence()
+
+    suspend fun getWrongAnswersForLearned(correct: SentenceEntity, count: Int = 3): List<SentenceEntity> {
+        val learned = sentenceDao.getRandomLearnedSentencesExcluding(correct.id, count)
+        if (learned.size < count) {
+            val additional = sentenceDao.getRandomSentencesExcluding(correct.id, count - learned.size)
+            return (learned + additional).take(count)
+        }
+        return learned
+    }
+
     // ===== CRUD =====
 
     suspend fun addUserSentence(english: String, russian: String, category: String = "general"): Long {

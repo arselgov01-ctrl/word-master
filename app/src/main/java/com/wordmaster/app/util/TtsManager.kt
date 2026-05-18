@@ -11,6 +11,9 @@ class TtsManager(context: Context) {
     private val ready = AtomicBoolean(false)
     private var tts: TextToSpeech? = null
 
+    @Volatile
+    private var pendingSpeechRate: Float = 1.0f
+
     init {
         tts = TextToSpeech(context.applicationContext) { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -22,6 +25,7 @@ class TtsManager(context: Context) {
                     Log.w(TAG, "English TTS not supported on this device")
                     ready.set(false)
                 } else {
+                    engine.setSpeechRate(pendingSpeechRate)
                     ready.set(true)
                 }
             } else {
@@ -32,6 +36,12 @@ class TtsManager(context: Context) {
     }
 
     fun isReady(): Boolean = ready.get()
+
+    fun setSpeechRate(rate: Float) {
+        val safe = rate.coerceIn(0.5f, 2.0f)
+        pendingSpeechRate = safe
+        tts?.setSpeechRate(safe)
+    }
 
     fun speak(text: String) {
         if (text.isBlank()) return

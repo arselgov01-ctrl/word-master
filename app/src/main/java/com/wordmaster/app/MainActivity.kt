@@ -19,32 +19,43 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.wordmaster.app.settings.AppSettings
 import com.wordmaster.app.ui.screens.DictionaryScreen
+import com.wordmaster.app.ui.screens.LearnedSentencesScreen
 import com.wordmaster.app.ui.screens.LearnedWordsScreen
 import com.wordmaster.app.ui.screens.MainScreen
 import com.wordmaster.app.ui.screens.QuizScreen
 import com.wordmaster.app.ui.screens.ReviewScreen
+import com.wordmaster.app.ui.screens.ReviewSentencesScreen
 import com.wordmaster.app.ui.screens.SentenceQuizScreen
 import com.wordmaster.app.ui.screens.SentencesScreen
+import com.wordmaster.app.ui.screens.SettingsScreen
 import com.wordmaster.app.ui.screens.StatsScreen
 import com.wordmaster.app.ui.theme.BackgroundDark
 import com.wordmaster.app.ui.theme.WordMasterTheme
 import com.wordmaster.app.viewmodel.DictionaryViewModel
+import com.wordmaster.app.viewmodel.LearnedSentencesViewModel
 import com.wordmaster.app.viewmodel.LearnedWordsViewModel
 import com.wordmaster.app.viewmodel.QuizViewModel
 import com.wordmaster.app.viewmodel.SentenceQuizViewModel
 import com.wordmaster.app.viewmodel.SentencesViewModel
+import com.wordmaster.app.viewmodel.SettingsViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            WordMasterTheme {
+            val settingsViewModel: SettingsViewModel = viewModel()
+            val settings by settingsViewModel.settings.collectAsState(initial = AppSettings())
+            WordMasterTheme(themeMode = settings.themeMode) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = BackgroundDark
                 ) {
-                    WordMasterNavigation()
+                    WordMasterNavigation(
+                        settings = settings,
+                        settingsViewModel = settingsViewModel
+                    )
                 }
             }
         }
@@ -60,20 +71,27 @@ enum class Screen {
     Main,
     Quiz,
     LearnedWords,
+    LearnedSentences,
     Stats,
     Review,
+    ReviewSentences,
     Dictionary,
     Sentences,
-    SentenceQuiz
+    SentenceQuiz,
+    Settings
 }
 
 @Composable
-fun WordMasterNavigation() {
+fun WordMasterNavigation(
+    settings: AppSettings,
+    settingsViewModel: SettingsViewModel
+) {
     val quizViewModel: QuizViewModel = viewModel()
     val learnedViewModel: LearnedWordsViewModel = viewModel()
     val dictionaryViewModel: DictionaryViewModel = viewModel()
     val sentencesViewModel: SentencesViewModel = viewModel()
     val sentenceQuizViewModel: SentenceQuizViewModel = viewModel()
+    val learnedSentencesViewModel: LearnedSentencesViewModel = viewModel()
 
     var currentScreen by remember { mutableStateOf(Screen.Main) }
 
@@ -101,6 +119,10 @@ fun WordMasterNavigation() {
     val sentenceQuizTotal by sentenceQuizViewModel.totalCount.collectAsState()
     val sentenceQuizLearned by sentenceQuizViewModel.learnedCount.collectAsState()
 
+    val learnedSentencesList by learnedSentencesViewModel.filteredSentences.collectAsState()
+    val learnedSentencesSearch by learnedSentencesViewModel.searchQuery.collectAsState()
+    val sentenceReviewState by learnedSentencesViewModel.reviewState.collectAsState()
+
     AnimatedContent(
         targetState = currentScreen,
         transitionSpec = {
@@ -122,18 +144,28 @@ fun WordMasterNavigation() {
                 totalWrong = totalWrong,
                 sentencesLearned = sentencesLearned,
                 sentencesTotal = sentencesTotal,
-                onStartQuiz = {
+                onStartWordQuiz = {
                     quizViewModel.loadNextWord()
                     currentScreen = Screen.Quiz
                 },
-                onShowLearned = { currentScreen = Screen.LearnedWords },
-                onShowStats = { currentScreen = Screen.Stats },
-                onShowReview = {
+                onStartSentenceQuiz = {
+                    sentenceQuizViewModel.loadNext()
+                    currentScreen = Screen.SentenceQuiz
+                },
+                onReviewWords = {
                     learnedViewModel.loadReviewWord()
                     currentScreen = Screen.Review
                 },
-                onShowDictionary = { currentScreen = Screen.Dictionary },
-                onShowSentences = { currentScreen = Screen.Sentences }
+                onReviewSentences = {
+                    learnedSentencesViewModel.loadReviewSentence()
+                    currentScreen = Screen.ReviewSentences
+                },
+                onShowWordDictionary = { currentScreen = Screen.Dictionary },
+                onShowLearnedWords = { currentScreen = Screen.LearnedWords },
+                onShowSentenceDictionary = { currentScreen = Screen.Sentences },
+                onShowLearnedSentences = { currentScreen = Screen.LearnedSentences },
+                onShowStats = { currentScreen = Screen.Stats },
+                onShowSettings = { currentScreen = Screen.Settings }
             )
 
             Screen.Quiz -> QuizScreen(
@@ -156,6 +188,15 @@ fun WordMasterNavigation() {
                 onBack = { currentScreen = Screen.Main }
             )
 
+            Screen.LearnedSentences -> LearnedSentencesScreen(
+                sentences = learnedSentencesList,
+                searchQuery = learnedSentencesSearch,
+                onSearchChange = { learnedSentencesViewModel.updateSearch(it) },
+                onMarkAsUnlearned = { learnedSentencesViewModel.markAsUnlearned(it) },
+                onResetAll = { learnedSentencesViewModel.resetAllLearned() },
+                onBack = { currentScreen = Screen.Main }
+            )
+
             Screen.Stats -> StatsScreen(
                 totalWords = totalCount,
                 learnedWords = learnedCount,
@@ -168,6 +209,14 @@ fun WordMasterNavigation() {
                 state = reviewState,
                 onAnswerSelected = { learnedViewModel.selectReviewAnswer(it) },
                 onNextWord = { learnedViewModel.loadReviewWord() },
+                onBack = { currentScreen = Screen.Main }
+            )
+
+            Screen.ReviewSentences -> ReviewSentencesScreen(
+                state = sentenceReviewState,
+                onStart = { learnedSentencesViewModel.loadReviewSentence() },
+                onAnswerSelected = { learnedSentencesViewModel.selectReviewAnswer(it) },
+                onNext = { learnedSentencesViewModel.loadReviewSentence() },
                 onBack = { currentScreen = Screen.Main }
             )
 
@@ -210,7 +259,15 @@ fun WordMasterNavigation() {
                 onNextSentence = { sentenceQuizViewModel.loadNext() },
                 onMarkLearned = { sentenceQuizViewModel.markAsLearned() },
                 onSkip = { sentenceQuizViewModel.skip() },
-                onBack = { currentScreen = Screen.Sentences }
+                onBack = { currentScreen = Screen.Main }
+            )
+
+            Screen.Settings -> SettingsScreen(
+                settings = settings,
+                onThemeChange = { settingsViewModel.setThemeMode(it) },
+                onAnswerCountChange = { settingsViewModel.setAnswerCount(it) },
+                onTtsSpeedChange = { settingsViewModel.setTtsSpeed(it) },
+                onBack = { currentScreen = Screen.Main }
             )
         }
     }

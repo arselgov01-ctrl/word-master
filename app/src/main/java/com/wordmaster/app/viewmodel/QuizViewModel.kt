@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.wordmaster.app.WordMasterApp
 import com.wordmaster.app.data.WordEntity
 import com.wordmaster.app.data.WordRepository
+import com.wordmaster.app.settings.AppSettings
+import com.wordmaster.app.settings.SettingsManager
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -26,10 +28,16 @@ data class QuizState(
 )
 
 class QuizViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: WordRepository = (application as WordMasterApp).repository
+    private val app = application as WordMasterApp
+    private val repository: WordRepository = app.repository
+    private val settingsManager: SettingsManager = app.settingsManager
 
     private val _state = MutableStateFlow(QuizState())
     val state: StateFlow<QuizState> = _state.asStateFlow()
+
+    private val answerCountFlow: StateFlow<Int> = settingsManager.settings
+        .map { it.answerCount }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, AppSettings.DEFAULT_ANSWER_COUNT)
 
     val learnedCount: StateFlow<Int> = repository.learnedCount
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
@@ -58,7 +66,8 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
 
             val word = repository.getNextQuizWord()
             if (word != null) {
-                val wrongAnswers = repository.getWrongAnswers(word, 5)
+                val wrongCount = (answerCountFlow.value - 1).coerceAtLeast(1)
+                val wrongAnswers = repository.getWrongAnswers(word, wrongCount)
                 val allAnswers = (wrongAnswers + word).shuffled()
 
                 _state.update {
