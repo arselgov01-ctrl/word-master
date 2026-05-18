@@ -2,6 +2,7 @@ package com.wordmaster.app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -94,6 +95,12 @@ fun WordMasterNavigation(
     val learnedSentencesViewModel: LearnedSentencesViewModel = viewModel()
 
     var currentScreen by remember { mutableStateOf(Screen.Main) }
+
+    // System back / gesture: go back to the main menu instead of minimizing
+    // the app. Disabled on Main so the OS handles the press normally (exit).
+    BackHandler(enabled = currentScreen != Screen.Main) {
+        currentScreen = Screen.Main
+    }
 
     val quizState by quizViewModel.state.collectAsState()
     val learnedCount by quizViewModel.learnedCount.collectAsState()
