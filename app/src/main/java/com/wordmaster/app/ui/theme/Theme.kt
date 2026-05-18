@@ -6,33 +6,91 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.wordmaster.app.settings.ThemeMode
 
+/**
+ * Semantic color tokens used across all screens. Provided via [LocalAppColors] from
+ * [WordMasterTheme] so light/dark switching works without touching individual screens.
+ */
+data class AppColors(
+    val background: Color,
+    val surfaceCard: Color,
+    val surfaceCardElevated: Color,
+    val textPrimary: Color,
+    val textSecondary: Color,
+    val textMuted: Color,
+    val cardGradientStart: Color,
+    val cardGradientEnd: Color,
+    val onGradient: Color,
+    val answerLetterBg: Color,
+    val divider: Color
+)
+
+private val DarkAppColors = AppColors(
+    background = DarkBackground,
+    surfaceCard = DarkSurfaceCard,
+    surfaceCardElevated = DarkSurfaceCardElevated,
+    textPrimary = DarkTextPrimary,
+    textSecondary = DarkTextSecondary,
+    textMuted = DarkTextMuted,
+    cardGradientStart = DarkCardGradientStart,
+    cardGradientEnd = DarkCardGradientEnd,
+    onGradient = DarkTextPrimary,
+    answerLetterBg = DarkAnswerLetterBg,
+    divider = DarkTextMuted.copy(alpha = 0.3f)
+)
+
+private val LightAppColors = AppColors(
+    background = Color(0xFFF5F7FB),
+    surfaceCard = Color(0xFFFFFFFF),
+    surfaceCardElevated = Color(0xFFEEF1F6),
+    textPrimary = Color(0xFF111418),
+    textSecondary = Color(0xFF52606D),
+    textMuted = Color(0xFF9AA1AA),
+    cardGradientStart = Color(0xFF3F69C6),
+    cardGradientEnd = Color(0xFF6E47B0),
+    onGradient = Color(0xFFFFFFFF),
+    answerLetterBg = Color(0xFFDCE7FF),
+    divider = Color(0xFFCAD0DA)
+)
+
+val LocalAppColors = staticCompositionLocalOf { DarkAppColors }
+
+object WordMasterAppTheme {
+    val colors: AppColors
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalAppColors.current
+}
+
 private val DarkColorScheme = darkColorScheme(
     primary = ButtonBlue,
-    onPrimary = TextWhite,
-    primaryContainer = SecondaryDark,
-    onPrimaryContainer = TextWhite,
+    onPrimary = DarkTextPrimary,
+    primaryContainer = DarkAnswerLetterBg,
+    onPrimaryContainer = DarkTextPrimary,
     secondary = ButtonPurple,
-    onSecondary = TextWhite,
+    onSecondary = DarkTextPrimary,
     secondaryContainer = AccentPurple,
-    onSecondaryContainer = TextWhite,
+    onSecondaryContainer = DarkTextPrimary,
     tertiary = ButtonTeal,
-    onTertiary = TextWhite,
-    background = BackgroundDark,
-    onBackground = TextWhite,
-    surface = BackgroundCard,
-    onSurface = TextWhite,
-    surfaceVariant = BackgroundCardLight,
-    onSurfaceVariant = TextGray,
+    onTertiary = DarkTextPrimary,
+    background = DarkBackground,
+    onBackground = DarkTextPrimary,
+    surface = DarkSurfaceCard,
+    onSurface = DarkTextPrimary,
+    surfaceVariant = DarkSurfaceCardElevated,
+    onSurfaceVariant = DarkTextSecondary,
     error = WrongRed,
-    onError = TextWhite,
-    outline = TextMuted
+    onError = DarkTextPrimary,
+    outline = DarkTextMuted
 )
 
 // Светлая схема Material 3. Кастомные палитры (BackgroundDark и пр.)
@@ -73,19 +131,22 @@ fun WordMasterTheme(
         ThemeMode.Dark -> true
     }
     val colorScheme = if (useDark) DarkColorScheme else LightColorScheme
+    val appColors = if (useDark) DarkAppColors else LightAppColors
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            val statusColor = if (useDark) BackgroundDark.toArgb() else colorScheme.background.toArgb()
+            val statusColor = appColors.background.toArgb()
             window.statusBarColor = statusColor
             window.navigationBarColor = statusColor
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !useDark
         }
     }
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(LocalAppColors provides appColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }
