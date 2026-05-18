@@ -4,6 +4,11 @@
 **Developer:** arselgov01 (arselgov01@gmail.com)
 **Last updated / Дата обновления:** 2026-05-18
 
+> **Canonical public URL (use this one for Google Play Console):**
+> <https://arselgov01-ctrl.github.io/word-master/>
+>
+> The HTML source for that page lives at [`docs/index.html`](docs/index.html).
+
 ---
 
 ## English

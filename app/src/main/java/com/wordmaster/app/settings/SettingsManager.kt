@@ -82,7 +82,7 @@ class SettingsManager(context: Context) {
     companion object {
         const val MIN_TTS_SPEED = 0.5f
         const val MAX_TTS_SPEED = 2.0f
-        const val PRIVACY_POLICY_URL = "https://github.com/arselgov01-ctrl/word-master/blob/main/PRIVACY_POLICY.md"
+        const val PRIVACY_POLICY_URL = "https://arselgov01-ctrl.github.io/word-master/"
 
         private val KEY_THEME = stringPreferencesKey("theme_mode")
         private val KEY_ANSWER_COUNT = intPreferencesKey("answer_count")
