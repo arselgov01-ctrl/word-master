@@ -35,6 +35,14 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
     private val _state = MutableStateFlow(QuizState())
     val state: StateFlow<QuizState> = _state.asStateFlow()
 
+    /**
+     * Emits `true` for each correct answer and `false` for each wrong
+     * one. Used by the host activity to drive the interstitial ad
+     * threshold without coupling the ViewModel to the ads layer.
+     */
+    private val _answerEvents = MutableSharedFlow<Boolean>(extraBufferCapacity = 4)
+    val answerEvents: SharedFlow<Boolean> = _answerEvents.asSharedFlow()
+
     private val answerCountFlow: StateFlow<Int> = settingsManager.settings
         .map { it.answerCount }
         .stateIn(viewModelScope, SharingStarted.Eagerly, AppSettings.DEFAULT_ANSWER_COUNT)
@@ -124,6 +132,8 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
                     celebrationMessage = celebrationMessage
                 )
             }
+
+            _answerEvents.tryEmit(isCorrect)
         }
     }
 

@@ -40,7 +40,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.wordmaster.app.ui.components.YandexBanner
 import com.wordmaster.app.ui.theme.BackgroundCard
 import com.wordmaster.app.ui.theme.BackgroundDark
 import com.wordmaster.app.ui.theme.ButtonBlue
@@ -100,7 +99,6 @@ fun MainScreen(
 
         Column(
             modifier = Modifier
-                .weight(1f)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp),
@@ -372,9 +370,6 @@ fun MainScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
         }
-
-        // Sticky banner ad at the bottom (Yandex Mobile Ads).
-        YandexBanner(modifier = Modifier.fillMaxWidth())
     }
 }
 
