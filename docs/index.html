@@ -130,7 +130,7 @@
           (<code>com.wordmaster.app</code>)<br />
           <strong>Developer:</strong> arselgov01
           (<a href="mailto:arselgov01@gmail.com">arselgov01@gmail.com</a>)<br />
-          <strong>Last updated / Дата обновления:</strong> 2026-05-18
+          <strong>Last updated / Дата обновления:</strong> 2026-05-19
         </p>
         <p class="lang-switch">
           <a href="#english">English</a>
@@ -177,16 +177,54 @@
         <p>
           WordMaster does not request runtime permissions. No camera,
           microphone, contacts, storage, or location access is required to use
-          the app.
+          the app. The application declares the
+          <code>INTERNET</code> and <code>ACCESS_NETWORK_STATE</code>
+          permissions, which are required by the Yandex Mobile Ads SDK to
+          fetch ad creatives and check network connectivity (see Section 3).
         </p>
 
         <h3>3. Third-party services</h3>
         <p>
-          WordMaster does <strong>not</strong> include third-party analytics,
-          advertising, crash reporting, or tracking SDKs.
+          WordMaster does <strong>not</strong> include any analytics or
+          crash-reporting SDKs.
         </p>
         <p>
-          The application uses the
+          <strong>Advertising — Yandex Mobile Ads.</strong> To support
+          development, WordMaster shows ads inside the app via the
+          <strong>Yandex Mobile Ads SDK</strong> (a banner on the home screen
+          and an occasional full-screen interstitial after a learning
+          session). The SDK is operated by Yandex and may collect technical
+          information required to deliver advertising and measure ad
+          performance — for example coarse geolocation derived from the IP
+          address, an advertising identifier (Google Advertising ID), the
+          device model, OS version, language, and network type. The
+          application itself does not access or store this data, and we do
+          not pass any personal information to the SDK. For details see
+          Yandex's own documents:
+        </p>
+        <ul>
+          <li>
+            Privacy Policy:
+            <a href="https://yandex.com/legal/confidential/" rel="noopener"
+              >yandex.com/legal/confidential</a
+            >
+          </li>
+          <li>
+            Mobile Ads SDK data processing notice:
+            <a
+              href="https://yandex.com/legal/mobileads_sdk_agreement/"
+              rel="noopener"
+              >yandex.com/legal/mobileads_sdk_agreement</a
+            >
+          </li>
+        </ul>
+        <p>
+          If you do not wish to receive personalised advertising, you can
+          reset or disable your advertising identifier in your Android
+          settings (Settings → Google → Ads).
+        </p>
+        <p>
+          <strong>Text-to-Speech.</strong> The application uses the
           <strong>Android Text-to-Speech (TTS)</strong> engine that is built
           into your device to pronounce English words and sentences. Voice
           synthesis runs locally; the text being spoken is handled by the
@@ -287,16 +325,56 @@
         <h3>2. Разрешения</h3>
         <p>
           WordMaster не запрашивает runtime-разрешений. Не требуется доступ к
-          камере, микрофону, контактам, файлам или геолокации.
+          камере, микрофону, контактам, файлам или геолокации. Приложение
+          объявляет разрешения <code>INTERNET</code> и
+          <code>ACCESS_NETWORK_STATE</code>, которые требуются Yandex Mobile
+          Ads SDK для загрузки рекламных материалов и проверки сетевого
+          соединения (см. раздел 3).
         </p>
 
         <h3>3. Сторонние сервисы</h3>
         <p>
-          WordMaster <strong>не использует</strong> сторонние SDK аналитики,
-          рекламы, отчётов о сбоях или трекинга.
+          WordMaster <strong>не использует</strong> сторонние SDK аналитики
+          и отчётов о сбоях.
         </p>
         <p>
-          Для произношения английских слов и предложений приложение использует
+          <strong>Реклама — Yandex Mobile Ads.</strong> Для поддержки
+          развития приложение показывает рекламу через
+          <strong>Yandex Mobile Ads SDK</strong> (баннер на главном экране
+          и периодически полноэкранную межстраничную рекламу после учебной
+          сессии). SDK разрабатывается компанией Яндекс и может собирать
+          технические данные, необходимые для показа и измерения
+          эффективности рекламы — например приблизительную геолокацию,
+          определяемую по IP-адресу, рекламный идентификатор устройства
+          (Google Advertising ID), модель устройства, версию ОС, язык и тип
+          сети. Само приложение не имеет доступа к этим данным и не
+          передаёт SDK никакой персональной информации. Подробности — в
+          документах Яндекса:
+        </p>
+        <ul>
+          <li>
+            Политика конфиденциальности:
+            <a href="https://yandex.ru/legal/confidential/" rel="noopener"
+              >yandex.ru/legal/confidential</a
+            >
+          </li>
+          <li>
+            Условия обработки данных Mobile Ads SDK:
+            <a
+              href="https://yandex.ru/legal/mobileads_sdk_agreement/"
+              rel="noopener"
+              >yandex.ru/legal/mobileads_sdk_agreement</a
+            >
+          </li>
+        </ul>
+        <p>
+          Если вы не хотите получать персонализированную рекламу, вы можете
+          сбросить или отключить рекламный идентификатор в настройках
+          Android (Настройки → Google → Реклама).
+        </p>
+        <p>
+          <strong>Озвучка.</strong> Для произношения английских слов и
+          предложений приложение использует
           <strong>системный механизм Android Text-to-Speech (TTS)</strong>.
           Синтез речи выполняется локально, обработкой произносимого текста
           занимается TTS-движок вашего устройства (например, Google

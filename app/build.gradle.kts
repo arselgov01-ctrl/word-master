@@ -71,6 +71,9 @@ dependencies {
 
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
+    // Yandex Mobile Ads (banner + interstitial) - https://ads.yandex.com/monetization/
+    implementation("com.yandex.android:mobileads:7.18.5")
+
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

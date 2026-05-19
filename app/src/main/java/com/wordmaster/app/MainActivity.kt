@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wordmaster.app.settings.AppSettings
 import com.wordmaster.app.ui.screens.DictionaryScreen
@@ -55,7 +56,12 @@ class MainActivity : ComponentActivity() {
                 ) {
                     WordMasterNavigation(
                         settings = settings,
-                        settingsViewModel = settingsViewModel
+                        settingsViewModel = settingsViewModel,
+                        onQuizFinished = {
+                            (application as? WordMasterApp)
+                                ?.adsManager
+                                ?.maybeShow(this@MainActivity)
+                        }
                     )
                 }
             }
@@ -85,7 +91,8 @@ enum class Screen {
 @Composable
 fun WordMasterNavigation(
     settings: AppSettings,
-    settingsViewModel: SettingsViewModel
+    settingsViewModel: SettingsViewModel,
+    onQuizFinished: () -> Unit = {}
 ) {
     val quizViewModel: QuizViewModel = viewModel()
     val learnedViewModel: LearnedWordsViewModel = viewModel()
@@ -183,7 +190,10 @@ fun WordMasterNavigation(
                 onNextWord = { quizViewModel.loadNextWord() },
                 onMarkLearned = { quizViewModel.markAsLearned() },
                 onSkip = { quizViewModel.skipWord() },
-                onBack = { currentScreen = Screen.Main }
+                onBack = {
+                    currentScreen = Screen.Main
+                    onQuizFinished()
+                }
             )
 
             Screen.LearnedWords -> LearnedWordsScreen(
@@ -267,7 +277,10 @@ fun WordMasterNavigation(
                 onNextSentence = { sentenceQuizViewModel.loadNext() },
                 onMarkLearned = { sentenceQuizViewModel.markAsLearned() },
                 onSkip = { sentenceQuizViewModel.skip() },
-                onBack = { currentScreen = Screen.Main }
+                onBack = {
+                    currentScreen = Screen.Main
+                    onQuizFinished()
+                }
             )
 
             Screen.Settings -> SettingsScreen(

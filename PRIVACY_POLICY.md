@@ -2,7 +2,7 @@
 
 **App:** WordMaster (com.wordmaster.app)
 **Developer:** arselgov01 (arselgov01@gmail.com)
-**Last updated / Дата обновления:** 2026-05-18
+**Last updated / Дата обновления:** 2026-05-19
 
 > **Canonical public URL (use this one for Google Play Console):**
 > <https://arselgov01-ctrl.github.io/word-master/>
@@ -34,11 +34,18 @@ WordMaster does not request runtime permissions. No camera, microphone, contacts
 
 ### 3. Third-party services
 
-WordMaster does **not** include third-party analytics, advertising, crash reporting, or tracking SDKs.
+WordMaster does **not** include any analytics or crash-reporting SDKs.
 
-The application uses the **Android Text-to-Speech (TTS)** engine that is built into your device to pronounce English words and sentences. Voice synthesis runs locally; the text being spoken is handled by the system TTS engine on your device. Please consult your TTS engine's own documentation (for example, Google Text-to-Speech) for details about how it processes data.
+**Advertising — Yandex Mobile Ads.** To support development, WordMaster shows ads inside the app via the Yandex Mobile Ads SDK (a banner on the home screen and an occasional full-screen interstitial after a learning session). The Yandex Mobile Ads SDK is operated by Yandex and may collect technical information required to deliver advertising and measure ad performance — for example coarse geolocation derived from the IP address, an advertising identifier (Google Advertising ID), the device model, OS version, language, and network type. The application itself does not access or store this data, and we do not pass any personal information to the SDK. For details see Yandex's own documents:
 
-The "Privacy Policy" link inside the app opens this document on GitHub via your default browser. Visiting GitHub is governed by GitHub's privacy policy.
+- Privacy Policy: <https://yandex.com/legal/confidential/>
+- Mobile Ads SDK data processing notice: <https://yandex.com/legal/mobileads_sdk_agreement/>
+
+If you do not wish to receive personalised advertising, you can reset or disable your advertising identifier in your Android settings (Settings → Google → Ads).
+
+**Text-to-Speech.** The application uses the **Android Text-to-Speech (TTS)** engine that is built into your device to pronounce English words and sentences. Voice synthesis runs locally; the text being spoken is handled by the system TTS engine on your device. Please consult your TTS engine's own documentation (for example, Google Text-to-Speech) for details about how it processes data.
+
+The "Privacy Policy" link inside the app opens this document via your default browser.
 
 ### 4. Children's privacy
 
@@ -90,11 +97,18 @@ WordMaster не запрашивает runtime-разрешений. Не тре
 
 ### 3. Сторонние сервисы
 
-WordMaster **не использует** сторонних SDK аналитики, рекламы, отчётов о сбоях или трекинга.
+WordMaster **не использует** сторонние SDK аналитики и отчётов о сбоях.
 
-Для произношения английских слов и предложений приложение использует **системный механизм Android Text-to-Speech (TTS)**. Синтез речи выполняется локально, обработкой произносимого текста занимается TTS-движок вашего устройства (например, Google Text-to-Speech) — подробности обработки данных описаны в политике конфиденциальности соответствующего движка.
+**Реклама — Yandex Mobile Ads.** Для поддержки развития приложение показывает рекламу через SDK Yandex Mobile Ads (баннер на главном экране и периодически полноэкранную межстраничную рекламу после учебной сессии). SDK Yandex Mobile Ads разрабатывается компанией Яндекс и может собирать технические данные, необходимые для показа и измерения эффективности рекламы — например приблизительную геолокацию, определяемую по IP-адресу, рекламный идентификатор устройства (Google Advertising ID), модель устройства, версию ОС, язык и тип сети. Само приложение не имеет доступа к этим данным и не передаёт SDK никакой персональной информации. Подробности — в документах Яндекса:
 
-Ссылка «Политика конфиденциальности» в приложении открывает данный документ на GitHub во встроенном браузере вашего устройства. Посещение GitHub регулируется политикой конфиденциальности GitHub.
+- Политика конфиденциальности: <https://yandex.ru/legal/confidential/>
+- Условия обработки данных Mobile Ads SDK: <https://yandex.ru/legal/mobileads_sdk_agreement/>
+
+Если вы не хотите получать персонализированную рекламу, вы можете сбросить или отключить рекламный идентификатор в настройках Android (Настройки → Google → Реклама).
+
+**Озвучка.** Для произношения английских слов и предложений приложение использует **системный механизм Android Text-to-Speech (TTS)**. Синтез речи выполняется локально, обработкой произносимого текста занимается TTS-движок вашего устройства (например, Google Text-to-Speech) — подробности обработки данных описаны в политике конфиденциальности соответствующего движка.
+
+Ссылка «Политика конфиденциальности» в приложении открывает данный документ во встроенном браузере вашего устройства.
 
 ### 4. Конфиденциальность детей
 
