@@ -8,9 +8,12 @@ import com.wordmaster.app.data.SentenceEntity
 import com.wordmaster.app.data.SentenceRepository
 import com.wordmaster.app.settings.AppSettings
 import com.wordmaster.app.settings.SettingsManager
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -34,6 +37,14 @@ class SentenceQuizViewModel(application: Application) : AndroidViewModel(applica
 
     private val _state = MutableStateFlow(SentenceQuizState())
     val state: StateFlow<SentenceQuizState> = _state.asStateFlow()
+
+    /**
+     * Emits `true` for each correct answer and `false` for each wrong
+     * one, mirroring [QuizViewModel.answerEvents] so the host activity
+     * can drive the interstitial threshold from one place.
+     */
+    private val _answerEvents = MutableSharedFlow<Boolean>(extraBufferCapacity = 4)
+    val answerEvents: SharedFlow<Boolean> = _answerEvents.asSharedFlow()
 
     private val answerCountFlow: StateFlow<Int> = settingsManager.settings
         .map { it.answerCount }
@@ -93,6 +104,8 @@ class SentenceQuizViewModel(application: Application) : AndroidViewModel(applica
                     sessionWrong = if (!isCorrect) it.sessionWrong + 1 else it.sessionWrong
                 )
             }
+
+            _answerEvents.tryEmit(isCorrect)
         }
     }
 

@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wordmaster.app.data.WordEntity
 import com.wordmaster.app.ui.components.SpeakerButton
+import com.wordmaster.app.ui.components.YandexBanner
 import com.wordmaster.app.ui.theme.BackgroundCard
 import com.wordmaster.app.ui.theme.BackgroundDark
 import com.wordmaster.app.ui.theme.ButtonBlue
@@ -146,64 +147,68 @@ fun QuizScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            when {
-                state.isLoading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = ButtonBlue)
+            Box(modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+            ) {
+                when {
+                    state.isLoading -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(color = ButtonBlue)
+                        }
                     }
-                }
-                state.currentWord == null -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("🎉", fontSize = 64.sp)
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                "Все слова выучены!",
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = GoldYellow,
-                                textAlign = TextAlign.Center
-                            )
-                            Spacer(modifier = Modifier.height(24.dp))
-                            Button(
-                                onClick = onBack,
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = ButtonBlue)
-                            ) {
-                                Text("На главную")
+                    state.currentWord == null -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text("🎉", fontSize = 64.sp)
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    "Все слова выучены!",
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = GoldYellow,
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(modifier = Modifier.height(24.dp))
+                                Button(
+                                    onClick = onBack,
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = ButtonBlue)
+                                ) {
+                                    Text("На главную")
+                                }
                             }
                         }
                     }
-                }
-                else -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                            .padding(horizontal = 20.dp)
-                    ) {
-                        WordQuizCard(word = state.currentWord)
+                    else -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                                .padding(horizontal = 20.dp)
+                        ) {
+                            WordQuizCard(word = state.currentWord)
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                        Text(
-                            text = "Выберите правильный перевод:",
-                            fontSize = 14.sp,
-                            color = TextGray,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                        state.answers.forEachIndexed { index, answer ->
-                            WordAnswerRow(
-                                index = index,
-                                word = answer,
-                                isSelected = state.selectedAnswer?.id == answer.id,
-                                isCorrectAnswer = state.currentWord.id == answer.id,
-                                isAnswered = state.selectedAnswer != null,
-                                onClick = { onAnswerSelected(answer) }
+                            Text(
+                                text = "Выберите правильный перевод:",
+                                fontSize = 14.sp,
+                                color = TextGray,
+                                modifier = Modifier.padding(bottom = 8.dp)
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
+
+                            state.answers.forEachIndexed { index, answer ->
+                                WordAnswerRow(
+                                    index = index,
+                                    word = answer,
+                                    isSelected = state.selectedAnswer?.id == answer.id,
+                                    isCorrectAnswer = state.currentWord.id == answer.id,
+                                    isAnswered = state.selectedAnswer != null,
+                                    onClick = { onAnswerSelected(answer) }
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
 
                         AnimatedVisibility(
                             visible = state.selectedAnswer != null && state.isCorrect == false
@@ -318,10 +323,19 @@ fun QuizScreen(
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(20.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
                     }
                 }
             }
+
+            // Sticky banner ad below the quiz content. Closable via × icon;
+            // resetKey ties the banner state to the active word so each new
+            // quiz session starts with the banner visible again.
+            YandexBanner(
+                modifier = Modifier.fillMaxWidth(),
+                resetKey = "quiz"
+            )
         }
 
         AnimatedVisibility(

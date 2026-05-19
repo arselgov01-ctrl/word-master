@@ -13,13 +13,13 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wordmaster.app.settings.AppSettings
 import com.wordmaster.app.ui.screens.DictionaryScreen
@@ -57,10 +57,10 @@ class MainActivity : ComponentActivity() {
                     WordMasterNavigation(
                         settings = settings,
                         settingsViewModel = settingsViewModel,
-                        onQuizFinished = {
+                        onQuizAnswer = { wasCorrect ->
                             (application as? WordMasterApp)
                                 ?.adsManager
-                                ?.maybeShow(this@MainActivity)
+                                ?.onQuizAnswer(this@MainActivity, wasCorrect)
                         }
                     )
                 }
@@ -92,7 +92,7 @@ enum class Screen {
 fun WordMasterNavigation(
     settings: AppSettings,
     settingsViewModel: SettingsViewModel,
-    onQuizFinished: () -> Unit = {}
+    onQuizAnswer: (Boolean) -> Unit = {}
 ) {
     val quizViewModel: QuizViewModel = viewModel()
     val learnedViewModel: LearnedWordsViewModel = viewModel()
@@ -107,6 +107,16 @@ fun WordMasterNavigation(
     // the app. Disabled on Main so the OS handles the press normally (exit).
     BackHandler(enabled = currentScreen != Screen.Main) {
         currentScreen = Screen.Main
+    }
+
+    // Drive the interstitial trigger from the quiz answer streams so the
+    // ad-frequency policy (every N answers / M wrongs) lives in one place
+    // and the screens themselves stay ad-free.
+    LaunchedEffect(quizViewModel) {
+        quizViewModel.answerEvents.collect { wasCorrect -> onQuizAnswer(wasCorrect) }
+    }
+    LaunchedEffect(sentenceQuizViewModel) {
+        sentenceQuizViewModel.answerEvents.collect { wasCorrect -> onQuizAnswer(wasCorrect) }
     }
 
     val quizState by quizViewModel.state.collectAsState()
@@ -190,10 +200,7 @@ fun WordMasterNavigation(
                 onNextWord = { quizViewModel.loadNextWord() },
                 onMarkLearned = { quizViewModel.markAsLearned() },
                 onSkip = { quizViewModel.skipWord() },
-                onBack = {
-                    currentScreen = Screen.Main
-                    onQuizFinished()
-                }
+                onBack = { currentScreen = Screen.Main }
             )
 
             Screen.LearnedWords -> LearnedWordsScreen(
@@ -277,10 +284,7 @@ fun WordMasterNavigation(
                 onNextSentence = { sentenceQuizViewModel.loadNext() },
                 onMarkLearned = { sentenceQuizViewModel.markAsLearned() },
                 onSkip = { sentenceQuizViewModel.skip() },
-                onBack = {
-                    currentScreen = Screen.Main
-                    onQuizFinished()
-                }
+                onBack = { currentScreen = Screen.Main }
             )
 
             Screen.Settings -> SettingsScreen(

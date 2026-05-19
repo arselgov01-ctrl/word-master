@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wordmaster.app.data.SentenceEntity
 import com.wordmaster.app.ui.components.SpeakerButton
+import com.wordmaster.app.ui.components.YandexBanner
 import com.wordmaster.app.ui.theme.BackgroundCard
 import com.wordmaster.app.ui.theme.BackgroundDark
 import com.wordmaster.app.ui.theme.ButtonBlue
@@ -123,42 +124,47 @@ fun SentenceQuizScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        when {
-            state.isLoading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = ButtonPurple)
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
+            when {
+                state.isLoading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = ButtonPurple)
+                    }
                 }
-            }
-            state.currentSentence == null -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("🎉", fontSize = 64.sp)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            "Все предложения выучены!",
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = GoldYellow,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Button(
-                            onClick = onBack,
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = ButtonPurple)
-                        ) {
-                            Text("Назад")
+                state.currentSentence == null -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("🎉", fontSize = 64.sp)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                "Все предложения выучены!",
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = GoldYellow,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(24.dp))
+                            Button(
+                                onClick = onBack,
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = ButtonPurple)
+                            ) {
+                                Text("Назад")
+                            }
                         }
                     }
                 }
-            }
-            else -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 20.dp)
-                ) {
+                else -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 20.dp)
+                    ) {
                     SentenceQuizCard(sentence = state.currentSentence)
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -303,6 +309,13 @@ fun SentenceQuizScreen(
                 }
             }
         }
+        }
+
+        // Sticky banner ad below the quiz content. Closable via × icon.
+        YandexBanner(
+            modifier = Modifier.fillMaxWidth(),
+            resetKey = "sentence_quiz"
+        )
     }
 }
 
